@@ -6,12 +6,25 @@
 const google = require('googleapis');
 const fs = require('fs');
 
-let key = require('./carta-035a88dd5f2d.json');
-console.log("key:", key);
+let config = {};
+try {
+  config = require('./gdrive.json');
+} catch(err) {
+  console.log("no gdrive.json");
+  config.client_email = process.env.drive_email;
+  config.private_key  = process.env.drive_key;
+}
+
+console.log("config:", config);
+if (!config.client_email || !config.private_key) {
+  console.log("no config data, exit");
+  return;
+}
+
 let jwtClient = new google.auth.JWT(
-  key.client_email,
+  config.client_email,
   null,
-  key.private_key,
+  config.private_key,
   ["https://www.googleapis.com/auth/drive", "https://www.googleapis.com/auth/drive.file", "https://www.googleapis.com/auth/drive.metadata"],
   null
   // "acdc_soft@asiaa.sinica.edu.tw" //null
@@ -44,20 +57,55 @@ jwtClient.authorize(function (err, tokens) {
     return;
   }
 
-  getFilelist();
+  // getFilelist();
+
+  drive.files.list({
+    auth: jwtClient,
+  }, function (err, resp) {
+
+    console.log("err:", err);
+    console.log("resp:", resp);
+
+    const files = resp.files;
+    for (let file of files) {
+      if (file.name = 'autobuild') {
+        console.log("bingo:", file.id);
+        // console.log("date:", new Date());
+        // TRAVIS_BUILD_NUMBER
+
+        const originFile = "Carta-10.12-0.9.0.dmg";
+
+        let dateObj = new Date();
+        let month = dateObj.getUTCMonth() + 1; //months from 1-12
+        let day = dateObj.getUTCDate();
+        let year = dateObj.getUTCFullYear();
+
+        let newdate = year + "-" + month + "-" + day;
+        console.log("day:", newdate);
+        let targetFile = "CARTA-"+newdate;
+        if (process.env.TRAVIS_BUILD_NUMBER) {
+          targetFile = targetFile+"-"+process.env.TRAVIS_BUILD_NUMBER;
+        }
+        targetFile =targetFile+".dmg";
+        // const trageFile = originFile;
+        console.log("BUILD NUMBER:", targetFile);
+
+        writeFile(binaryFileContent(trageFile, 'application/x-apple-diskimage',
+        originFile, ["0B6SSpI8M8o7uRUtwV1Z3MGwtVGM"]));
+      }
+    }
+    // handle err and response
+  });
+
+  // { kind: 'drive#file',
+  //      id: '0B6SSpI8M8o7uRUtwV1Z3MGwtVGM',
+  //      name: 'autobuild',
+  //      mimeType: 'application/vnd.google-apps.folder' },
 
  // writeFile(textFileContent("c.txt", "apple", ["0B6SSpI8M8o7uRUtwV1Z3MGwtVGM"]));
-
   // writeFile(imageFileContent("d.png", "selection.png", ["0B6SSpI8M8o7uRUtwV1Z3MGwtVGM"]));
-
 //  writeFile(imageFileContent("d.png", 'image/png', "selection.png", ["0B6SSpI8M8o7uRUtwV1Z3MGwtVGM"]));
 
-  writeFile(binaryFileContent("e.dmg", 'application/x-apple-diskimage',
-  "Carta-10.12-0.9.4-0523.dmg", ["0B6SSpI8M8o7uRUtwV1Z3MGwtVGM"]));
-
-  // createFolder();
-
-  // list();
 });
 
 // https://github.com/google/google-api-nodejs-client#exposing-request-object
@@ -209,19 +257,11 @@ function createFolder() {
   });
 }
 
-
 //2nd part
-
 // let req = drive.files.create(/* ... */);
 // console.log(req.uri.href); // print out the request's URL.
 
-
-// let drive = google.drive({ version: 'v3', auth: oauth2Client });
-
-
-
 //3rd
-
 // You can also override request options per request, such as url, method, and encoding.
 //
 // For example:
