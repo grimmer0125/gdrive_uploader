@@ -17,6 +17,14 @@ let jwtClient = new google.auth.JWT(
   // "acdc_soft@asiaa.sinica.edu.tw" //null
 );
 
+// https://github.com/extrabacon/google-oauth-jwt
+// service account -> download json file
+// json file-> be used automatically to get JWT token in google api
+// token can be used for curl, https://getblimp.github.io/django-rest-framework-jwt/
+// curl -H "Authorization: JWT <your_token>"
+// oauth is a flow/protocal, not the token it self, so can work with JWT token
+// Now that the Service Account has permission to some user resources, the application can query the API with OAuth2. When using OAuth2
+
 // https://github.com/google/google-api-nodejs-client/issues/431
 // authData.email,
 // authData.keyFile,
