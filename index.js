@@ -57,29 +57,25 @@ jwtClient.authorize(function (err, tokens) {
     return;
   }
 
-  // getFilelist();
-
   drive.files.list({
     auth: jwtClient,
   }, function (err, resp) {
 
     console.log("err:", err);
-    console.log("resp:", resp);
+    console.log("file list resp:", resp);
 
     const files = resp.files;
     for (let file of files) {
       if (file.name = 'autobuild') {
         console.log("bingo:", file.id);
-        // console.log("date:", new Date());
-        // TRAVIS_BUILD_NUMBER
 
-        const originFile = "Carta-10.12-0.9.0.dmg";
+        let originFile = null;
+        let contentType = null;
 
         let dateObj = new Date();
         let month = dateObj.getUTCMonth() + 1; //months from 1-12
         let day = dateObj.getUTCDate();
         let year = dateObj.getUTCFullYear();
-
         let newdate = year + "-" + month + "-" + day;
         console.log("day:", newdate);
         let targetFile = "CARTA-"+newdate;
@@ -87,11 +83,21 @@ jwtClient.authorize(function (err, tokens) {
           targetFile = targetFile+"-"+process.env.TRAVIS_BUILD_NUMBER;
         }
         targetFile =targetFile+".dmg";
-        // const trageFile = originFile;
         console.log("BUILD NUMBER:", targetFile);
 
-        writeFile(binaryFileContent(trageFile, 'application/x-apple-diskimage',
-        originFile, ["0B6SSpI8M8o7uRUtwV1Z3MGwtVGM"]));
+        // const originFile = "Carta-10.12-0.9.0.dmg";
+        // const contentType = 'application/x-apple-diskimage';
+        // writeFile(binaryFileContent(targetFile, contentType,
+        // originFile, [file.id]));
+
+        // test: upload image file
+        originFile = "selection2.png";
+        targetFile = "selection2.png";
+        contentType = 'image/png';
+        writeFile(binaryFileContent(targetFile, contentType,
+        originFile, [file.id]));
+
+        break;
       }
     }
     // handle err and response
@@ -129,17 +135,6 @@ function getFilelist() {
   });
 
 }
-
-const helloWordText = {
-  resource: {
-    name: 'Test',
-    mimeType: 'text/plain'
-  },
-  media: {
-    mimeType: 'text/plain',
-    body: 'Hello World'
-  }
-};
 
 // https://developers.google.com/drive/v2/reference/files/insert, so mime/content type should be arbitrary
 function textFileContent(fileName, text, folders) {
@@ -207,6 +202,18 @@ function binaryFileContent(fileName, contentType, path, folders) {
 // google doc mime type: https://developers.google.com/drive/v3/web/mime-types?hl=zh-TW
 
 function writeHelloWorldFile() {
+
+  const helloWordText = {
+    resource: {
+      name: 'Test',
+      mimeType: 'text/plain'
+    },
+    media: {
+      mimeType: 'text/plain',
+      body: 'Hello World'
+    }
+  };
+
   drive.files.create(helloWordText
     , function (err, resp) {
 
