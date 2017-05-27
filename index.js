@@ -16,8 +16,6 @@ const optionDefinitions = [
 const options = commandLineArgs(optionDefinitions)
 console.log("options:", options)
 
-// return;
-
 console.log("setup google drive config");
 
 let config = {};
@@ -81,7 +79,6 @@ jwtClient.authorize(function (err, tokens) {
     const files = resp.files;
     for (let file of files) {
       if (file.name = 'autobuild') {
-        break;
         console.log("bingo:", file.id);
 
         let originFile = null;
@@ -96,7 +93,25 @@ jwtClient.authorize(function (err, tokens) {
         let targetFile = "CARTA-"+newdate;
         if (process.env.TRAVIS_BUILD_NUMBER) {
           targetFile = targetFile+"-"+process.env.TRAVIS_BUILD_NUMBER;
+          //CARTA-DATE-BUILDNUMBER
         }
+
+        let currentBranch = "";
+        console.log("if pull:", process.env.TRAVIS_PULL_REQUEST)
+        if (process.env.TRAVIS_PULL_REQUEST) {
+          if (process.env.TRAVIS_PULL_REQUEST_BRANCH) {
+            currentBranch = process.env.TRAVIS_PULL_REQUEST_BRANCH;
+          }
+        } else {
+          if (process.env.TRAVIS_BRANCH) {
+            currentBranch = process.env.TRAVIS_BRANCH;
+          }
+        }
+        console.log("currentBranch:", currentBranch);
+
+        break;
+
+
         targetFile =targetFile+".dmg";
         console.log("BUILD NUMBER:", targetFile);
 
