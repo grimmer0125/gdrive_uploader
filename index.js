@@ -5,6 +5,20 @@
 
 const google = require('googleapis');
 const fs = require('fs');
+const commandLineArgs = require('command-line-args');
+
+const optionDefinitions = [
+  { name: 'verbose', alias: 'v', type: Boolean },
+  { name: 'src', type: String, multiple: true, defaultOption: true },
+  { name: 'timeout', alias: 't', type: Number }
+]
+
+const options = commandLineArgs(optionDefinitions)
+console.log("options:", options)
+
+// return;
+
+console.log("setup google drive config");
 
 let config = {};
 try {
@@ -14,7 +28,6 @@ try {
   config.client_email = process.env.drive_email;
   config.private_key  = process.env.drive_key;
 }
-
 console.log("config:", config);
 if (!config.client_email || !config.private_key) {
   console.log("no config data, exit");
@@ -27,8 +40,10 @@ let jwtClient = new google.auth.JWT(
   config.private_key,
   ["https://www.googleapis.com/auth/drive", "https://www.googleapis.com/auth/drive.file", "https://www.googleapis.com/auth/drive.metadata"],
   null
-  // "acdc_soft@asiaa.sinica.edu.tw" //null
 );
+let drive = google.drive({ version: 'v3', auth: jwtClient });
+
+
 
 // https://github.com/extrabacon/google-oauth-jwt
 // service account -> download json file
@@ -48,7 +63,6 @@ let jwtClient = new google.auth.JWT(
 
 // https://www.googleapis.com/auth/drive.file	View and manage Google Drive files and folders that you have opened or created with this app
 
-let drive = google.drive({ version: 'v3', auth: jwtClient });
 
 //1st part
 jwtClient.authorize(function (err, tokens) {
@@ -67,6 +81,7 @@ jwtClient.authorize(function (err, tokens) {
     const files = resp.files;
     for (let file of files) {
       if (file.name = 'autobuild') {
+        break;
         console.log("bingo:", file.id);
 
         let originFile = null;

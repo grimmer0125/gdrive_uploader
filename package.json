@@ -5,11 +5,12 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index.js"
+    "start": "node index.js --verbose --timeout=1000 --src one.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "command-line-args": "^4.0.5",
     "googleapis": "^19.0.0"
   }
 }
