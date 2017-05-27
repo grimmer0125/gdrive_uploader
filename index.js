@@ -98,7 +98,7 @@ jwtClient.authorize(function (err, tokens) {
 
         let currentBranch = "";
         console.log("if pull:", process.env.TRAVIS_PULL_REQUEST)
-        if (process.env.TRAVIS_PULL_REQUEST) {
+        if (process.env.TRAVIS_PULL_REQUEST != "false") {
           if (process.env.TRAVIS_PULL_REQUEST_BRANCH) {
             currentBranch = process.env.TRAVIS_PULL_REQUEST_BRANCH;
           }
