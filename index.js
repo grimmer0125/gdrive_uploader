@@ -24,7 +24,7 @@ try {
 } catch(err) {
   console.log("no gdrive.json");
   config.client_email = process.env.drive_email;
-  config.private_key  = "-----BEGIN PRIVATE KEY-----\n"+ process.env.drive_key + "\n-----END PRIVATE KEY-----\n";
+  config.private_key  = process.env.drive_key;
 }
 console.log("config:", config);
 if (!config.client_email || !config.private_key) {
