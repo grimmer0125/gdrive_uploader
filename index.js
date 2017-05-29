@@ -84,7 +84,7 @@ jwtClient.authorize(function (err, tokens) {
   let targetFile = "CARTA-"+newdate;
   if (process.env.TRAVIS_BUILD_NUMBER) {
     console.log("current build number:",process.env.TRAVIS_BUILD_NUMBER);
-    targetFile = targetFile+"-"+process.env.TRAVIS_BUILD_NUMBER;
+    targetFile = targetFile+"-build"+process.env.TRAVIS_BUILD_NUMBER;
   }
 
   let currentBranch = "";
@@ -100,6 +100,10 @@ jwtClient.authorize(function (err, tokens) {
     }
   }
   console.log("currentBranch:", currentBranch);
+
+  if(currentBranch) {
+    targetFile += "-" + currentBranch;
+  }
 
   targetFile =targetFile+".dmg";
   console.log("upload file new name:", targetFile);
