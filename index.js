@@ -116,8 +116,8 @@ jwtClient.authorize(function (err, tokens) {
         targetFile =targetFile+".dmg";
         console.log("upload file new name:", targetFile);
 
-        const originFile = "Carta-10.12-0.9.0.dmg";
-        const contentType = 'application/x-apple-diskimage';
+        originFile = "Carta-10.12-0.9.0.dmg";
+        contentType = 'application/x-apple-diskimage';
         writeFile(binaryFileContent(targetFile, contentType,
         originFile, [file.id]));
 
