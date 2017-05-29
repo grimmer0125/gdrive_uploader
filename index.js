@@ -2,6 +2,10 @@
 
 // https://developers.google.com/drive/v3/web/quickstart/nodejs
 // https://github.com/google/google-api-nodejs-client#using-jwt-service-tokens
+const  os = require('os');
+
+//echo $OSTYPE
+// return;
 
 const google = require('googleapis');
 const fs = require('fs');
@@ -73,15 +77,30 @@ jwtClient.authorize(function (err, tokens) {
   let originFile = null;
   let contentType = null;
 
+  let targetFile = "CARTA-";
+  console.log(os.platform()); // 'darwin'
+  console.log(os.release());  //16.6.0
+  let osver = os.release().split(".");
+  if (osver[0] == 16) {
+    targetFile += "10.12";
+  } else if (osver[0] ==15) {
+    targetFile += "10.11";
+  }
+
   let dateObj = new Date();
   let minute = dateObj.getMinutes();
+  minute= minute<10? ("0"+minute):minute;
   let hour = dateObj.getHours();
+  hour= hour<10? ("0"+hour):hour;
+
   let month = dateObj.getUTCMonth() + 1; //months from 1-12
   let day = dateObj.getUTCDate();
   let year = dateObj.getUTCFullYear();
-  let newdate = year + "-" + month + "-" + day +"-" +hour+ "-"+minute;
+  let newdate = year + "-" + month + "-" + day +"-" +hour+minute;
   console.log("day:", newdate);
-  let targetFile = "CARTA-"+newdate;
+
+  targetFile = targetFile +"-" +newdate;
+
   if (process.env.TRAVIS_BUILD_NUMBER) {
     console.log("current build number:",process.env.TRAVIS_BUILD_NUMBER);
     targetFile = targetFile+"-build"+process.env.TRAVIS_BUILD_NUMBER;
@@ -101,6 +120,10 @@ jwtClient.authorize(function (err, tokens) {
   }
   console.log("currentBranch:", currentBranch);
 
+  if (process.env.TRAVIS_XCODE_SDK) {
+    console.log("xcode sdk:", process.env.TRAVIS_XCODE_SDK);
+  }
+
   if(currentBranch) {
     targetFile += "-" + currentBranch;
   }
@@ -108,7 +131,7 @@ jwtClient.authorize(function (err, tokens) {
   targetFile =targetFile+".dmg";
   console.log("upload file new name:", targetFile);
 
-  originFile = "Carta-10.12-0.9.0.dmg";
+  originFile = "Carta.dmg";
   contentType = 'application/x-apple-diskimage';
 
   writeFile(binaryFileContent(targetFile, contentType,
