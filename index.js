@@ -92,6 +92,7 @@ jwtClient.authorize(function (err, tokens) {
         console.log("day:", newdate);
         let targetFile = "CARTA-"+newdate;
         if (process.env.TRAVIS_BUILD_NUMBER) {
+          console.log("current build number:",process.env.TRAVIS_BUILD_NUMBER);
           targetFile = targetFile+"-"+process.env.TRAVIS_BUILD_NUMBER;
           //CARTA-DATE-BUILDNUMBER
         }
@@ -110,7 +111,6 @@ jwtClient.authorize(function (err, tokens) {
         }
         console.log("currentBranch:", currentBranch);
 
-        break;
 
 
         targetFile =targetFile+".dmg";
