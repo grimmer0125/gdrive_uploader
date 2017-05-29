@@ -114,19 +114,19 @@ jwtClient.authorize(function (err, tokens) {
 
 
         targetFile =targetFile+".dmg";
-        console.log("BUILD NUMBER:", targetFile);
+        console.log("upload file new name:", targetFile);
 
-        // const originFile = "Carta-10.12-0.9.0.dmg";
-        // const contentType = 'application/x-apple-diskimage';
-        // writeFile(binaryFileContent(targetFile, contentType,
-        // originFile, [file.id]));
-
-        // test: upload image file
-        originFile = "selection2.png";
-        targetFile = "selection2.png";
-        contentType = 'image/png';
+        const originFile = "Carta-10.12-0.9.0.dmg";
+        const contentType = 'application/x-apple-diskimage';
         writeFile(binaryFileContent(targetFile, contentType,
         originFile, [file.id]));
+
+        // test: upload image file
+        // originFile = "selection2.png";
+        // targetFile = "selection2.png";
+        // contentType = 'image/png';
+        // writeFile(binaryFileContent(targetFile, contentType,
+        // originFile, [file.id]));
 
         break;
       }
