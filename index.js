@@ -62,6 +62,7 @@ let drive = google.drive({ version: 'v3', auth: jwtClient });
 // https://www.googleapis.com/auth/drive.file	View and manage Google Drive files and folders that you have opened or created with this app
 
 
+
 //1st part
 jwtClient.authorize(function (err, tokens) {
   if (err) {
@@ -69,70 +70,76 @@ jwtClient.authorize(function (err, tokens) {
     return;
   }
 
-  drive.files.list({
-    auth: jwtClient,
-  }, function (err, resp) {
+  let originFile = null;
+  let contentType = null;
 
-    console.log("err:", err);
-    console.log("file list resp:", resp);
+  let dateObj = new Date();
+  let minute = dateObj.getMinutes();
+  let hour = dateObj.getHours();
+  let month = dateObj.getUTCMonth() + 1; //months from 1-12
+  let day = dateObj.getUTCDate();
+  let year = dateObj.getUTCFullYear();
+  let newdate = year + "-" + month + "-" + day +"-" +hour+ "-"+minute;
+  console.log("day:", newdate);
+  let targetFile = "CARTA-"+newdate;
+  if (process.env.TRAVIS_BUILD_NUMBER) {
+    console.log("current build number:",process.env.TRAVIS_BUILD_NUMBER);
+    targetFile = targetFile+"-"+process.env.TRAVIS_BUILD_NUMBER;
+  }
 
-    const files = resp.files;
-    for (let file of files) {
-      if (file.name = 'autobuild') {
-        console.log("bingo:", file.id);
-
-        let originFile = null;
-        let contentType = null;
-
-        let dateObj = new Date();
-        let month = dateObj.getUTCMonth() + 1; //months from 1-12
-        let day = dateObj.getUTCDate();
-        let year = dateObj.getUTCFullYear();
-        let newdate = year + "-" + month + "-" + day;
-        console.log("day:", newdate);
-        let targetFile = "CARTA-"+newdate;
-        if (process.env.TRAVIS_BUILD_NUMBER) {
-          console.log("current build number:",process.env.TRAVIS_BUILD_NUMBER);
-          targetFile = targetFile+"-"+process.env.TRAVIS_BUILD_NUMBER;
-          //CARTA-DATE-BUILDNUMBER
-        }
-
-        let currentBranch = "";
-        console.log("if pull:", process.env.TRAVIS_PULL_REQUEST)
-        if (process.env.TRAVIS_PULL_REQUEST != "false") {
-          if (process.env.TRAVIS_PULL_REQUEST_BRANCH) {
-            currentBranch = process.env.TRAVIS_PULL_REQUEST_BRANCH;
-          }
-        } else {
-          console.log("branch:", process.env.TRAVIS_BRANCH)
-          if (process.env.TRAVIS_BRANCH) {
-            currentBranch = process.env.TRAVIS_BRANCH;
-          }
-        }
-        console.log("currentBranch:", currentBranch);
-
-
-
-        targetFile =targetFile+".dmg";
-        console.log("upload file new name:", targetFile);
-
-        originFile = "Carta-10.12-0.9.0.dmg";
-        contentType = 'application/x-apple-diskimage';
-        writeFile(binaryFileContent(targetFile, contentType,
-        originFile, [file.id]));
-
-        // test: upload image file
-        // originFile = "selection2.png";
-        // targetFile = "selection2.png";
-        // contentType = 'image/png';
-        // writeFile(binaryFileContent(targetFile, contentType,
-        // originFile, [file.id]));
-
-        break;
-      }
+  let currentBranch = "";
+  console.log("if pull:", process.env.TRAVIS_PULL_REQUEST)
+  if (process.env.TRAVIS_PULL_REQUEST != "false") {
+    if (process.env.TRAVIS_PULL_REQUEST_BRANCH) {
+      currentBranch = process.env.TRAVIS_PULL_REQUEST_BRANCH;
     }
-    // handle err and response
-  });
+  } else {
+    console.log("branch:", process.env.TRAVIS_BRANCH)
+    if (process.env.TRAVIS_BRANCH) {
+      currentBranch = process.env.TRAVIS_BRANCH;
+    }
+  }
+  console.log("currentBranch:", currentBranch);
+
+  targetFile =targetFile+".dmg";
+  console.log("upload file new name:", targetFile);
+
+  originFile = "Carta-10.12-0.9.0.dmg";
+  contentType = 'application/x-apple-diskimage';
+
+  writeFile(binaryFileContent(targetFile, contentType,
+  originFile, ["0B6SSpI8M8o7uRUtwV1Z3MGwtVGM"]));
+
+  // original is writeFile in the callback function of drive.files.list, but sometimes we will get
+  // Error: socket hang up,  at process._tickCallback (internal/process/next_tick.js:104:9) code: 'ECONNRESET'
+  // so just use hard-code fileid(for a specific folder) to send file
+
+  // drive.files.list({
+  //   auth: jwtClient,
+  // }, function (err, resp) {
+  //
+  //   console.log("err:", err);
+  //   console.log("file list resp:", resp);
+  //
+  //   const files = resp.files;
+  //   for (let file of files) {
+  //     if (file.name = 'autobuild') {
+  //       console.log("bingo:", file.id);
+  //
+  //
+  //       // test: upload image file
+  //       // originFile = "selection2.png";
+  //       // targetFile = "selection3.png";
+  //       // contentType = 'image/png';
+  //       // writeFile(binaryFileContent(targetFile, contentType,
+  //       // originFile, [file.id]));
+  //
+  //       // writeHelloWorldFile();
+  //       break;
+  //     }
+  //   }
+  //   // handle err and response
+  // });
 
   // { kind: 'drive#file',
   //      id: '0B6SSpI8M8o7uRUtwV1Z3MGwtVGM',
@@ -198,7 +205,7 @@ function binaryFileContent(fileName, contentType, path, folders) {
     //fileMetadata
     resource: {
       name: fileName,
-      // mimeType: 'text/plain'
+      mimeType: contentType, //'image/png',
     },
     //media
     media: {
@@ -236,12 +243,12 @@ function writeHelloWorldFile() {
 
   const helloWordText = {
     resource: {
-      name: 'Test',
+      name: 'Test2',
       mimeType: 'text/plain'
     },
     media: {
       mimeType: 'text/plain',
-      body: 'Hello World'
+      body: 'Hello World2'
     }
   };
 
