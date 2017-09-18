@@ -1,11 +1,7 @@
 // Ref:
-
 // https://developers.google.com/drive/v3/web/quickstart/nodejs
 // https://github.com/google/google-api-nodejs-client#using-jwt-service-tokens
 const  os = require('os');
-
-//echo $OSTYPE
-// return;
 
 const google = require('googleapis');
 const fs = require('fs');
@@ -29,6 +25,7 @@ try {
   console.log("no gdrive.json");
   config.client_email = process.env.drive_email;
   config.private_key  = process.env.drive_key;
+  config.target_folderid = process.env.drive_folderid;
 }
 console.log("config:", config);
 if (!config.client_email || !config.private_key) {
@@ -45,8 +42,6 @@ let jwtClient = new google.auth.JWT(
 );
 let drive = google.drive({ version: 'v3', auth: jwtClient });
 
-
-
 // https://github.com/extrabacon/google-oauth-jwt
 // service account -> download json file
 // json file-> be used automatically to get JWT token in google api
@@ -61,11 +56,9 @@ let drive = google.drive({ version: 'v3', auth: jwtClient });
 // authData.key,
 // authData.scopes,
 // authData.subject
-//http://isd-soft.com/tech_blog/accessing-google-apis-using-service-account-node-js/
+// http://isd-soft.com/tech_blog/accessing-google-apis-using-service-account-node-js/
 
 // https://www.googleapis.com/auth/drive.file	View and manage Google Drive files and folders that you have opened or created with this app
-
-
 
 //1st part
 jwtClient.authorize(function (err, tokens) {
@@ -135,9 +128,9 @@ jwtClient.authorize(function (err, tokens) {
   contentType = 'application/x-apple-diskimage';
 
   writeFile(binaryFileContent(targetFile, contentType,
-  originFile, ["0B6SSpI8M8o7uRUtwV1Z3MGwtVGM"]));
+  originFile, [config.target_folderid]));
 
-  // original is writeFile in the callback function of drive.files.list, but sometimes we will get
+  // original way is call writeFile in the callback function of drive.files.list, but sometimes we will get
   // Error: socket hang up,  at process._tickCallback (internal/process/next_tick.js:104:9) code: 'ECONNRESET'
   // so just use hard-code fileid(for a specific folder) to send file
 
@@ -153,7 +146,6 @@ jwtClient.authorize(function (err, tokens) {
   //     if (file.name = 'autobuild') {
   //       console.log("bingo:", file.id);
   //
-  //
   //       // test: upload image file
   //       // originFile = "selection2.png";
   //       // targetFile = "selection3.png";
@@ -167,15 +159,6 @@ jwtClient.authorize(function (err, tokens) {
   //   }
   //   // handle err and response
   // });
-
-  // { kind: 'drive#file',
-  //      id: '0B6SSpI8M8o7uRUtwV1Z3MGwtVGM',
-  //      name: 'autobuild',
-  //      mimeType: 'application/vnd.google-apps.folder' },
-
- // writeFile(textFileContent("c.txt", "apple", ["0B6SSpI8M8o7uRUtwV1Z3MGwtVGM"]));
-  // writeFile(imageFileContent("d.png", "selection.png", ["0B6SSpI8M8o7uRUtwV1Z3MGwtVGM"]));
-//  writeFile(imageFileContent("d.png", 'image/png', "selection.png", ["0B6SSpI8M8o7uRUtwV1Z3MGwtVGM"]));
 
 });
 
