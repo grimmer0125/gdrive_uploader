@@ -25,4 +25,4 @@ Do one of the below steps.
 
 ## Step4.  
 
-`npm start`. By default, this program will upload `Carta.dmg` to target google drive folder.
+`npm run start`. By default, this program will upload `Carta.dmg` to target google drive folder.
