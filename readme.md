@@ -23,6 +23,10 @@ Do one of the below steps.
 * Rename the downloaded json file to `gdrive.json`, then put it in this Node.js project folder. Add one more key, "target_folderid": "xxx".  
 * Or export environment variables, drive_email, drive_folderid, drive_key. Their values can be found in the json file.      
 
-## Step4.  
+## Step4. Install dependencies 
+
+`npm install`.
+
+## Step5.  
 
 `npm run start`. By default, this program will upload `Carta.dmg` to target google drive folder.
