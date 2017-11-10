@@ -11,6 +11,6 @@
   "license": "ISC",
   "dependencies": {
     "command-line-args": "^4.0.5",
-    "googleapis": "^19.0.0"
+    "googleapis": "^22.2.0"
   }
 }
