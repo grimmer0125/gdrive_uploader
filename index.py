@@ -150,6 +150,7 @@ def print_files_in_folder(service, folder_id):
             break
     return files
 
+# v3?
 def delete_file(service, file_id):
     """Permanently delete a file, skipping the trash.
 
@@ -227,6 +228,8 @@ def main():
     # about(service)
     # list(service)
     # files = print_files_in_folder(service, "0B6SSpI8M8o7uRUtwV1Z3MGwtVGM")
+    test_file = "1nLl_MAiobwbUtDEwKrfYXj1fuSwcgyMG"
+    delete_file(service, test_file)
     # for file in files:
     #     transfer(service, file, 'acdc_soft@asiaa.sinica.edu.tw')
         # permissions = file1.auth.service.permissions().list(fileId=file1['id']).execute()
